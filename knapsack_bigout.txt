@@ -1,0 +1,1 @@
+Optimal value for knapsack_big.txt with solver cached 4243395Optimal value for knapsack_big.txt with solver cached 4243395

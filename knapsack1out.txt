@@ -1,0 +1,1 @@
+Optimal value for knapsack1.txt with solver cached 2493893Optimal value for knapsack1.txt with solver straight 2493893Optimal value for knapsack1.txt with solver cached 2493893Optimal value for knapsack1.txt with solver cached 2493893

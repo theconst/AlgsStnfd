@@ -1,0 +1,92 @@
+package tsp;
+
+
+import java.util.Arrays;
+import java.util.List;
+
+
+public class TSPFinder {
+	
+	private float[][] pathLengthPrev;
+//	private float[][] pathLengthNext;
+	
+	private Roadmap target;
+	private int size;
+	private int source;
+	
+	public TSPFinder(Roadmap map) {
+		this.target = map;
+		this.size = map.size();
+//	int max =  MaskedSets.binomial(map.size(), map.size() / 2);
+		
+		pathLengthPrev = new float[size][1 << this.size];
+//		pathLengthNext = new float[size][1 << this.size];
+		this.source = 0;
+	}
+	
+	public void solve() {
+		int used = 1;		//0 element in use
+		int from = 1;		//starting from first element
+		
+		for (int i = 0; i < pathLengthPrev.length; ++i) {
+			Arrays.fill(pathLengthPrev[i], Float.POSITIVE_INFINITY);
+		}
+		
+//		pathLengthPrev[source][MaskedSets.orderOf(used)] = 0;
+		pathLengthPrev[source][1] = 0;
+//		copy(pathLengthPrev, pathLengthNext);
+		
+			
+		for (int cardinality = 2; cardinality <= size; cardinality++) {
+			List<Integer> subsets = MaskedSets.combinations(used, from, size, cardinality - 1);
+			
+			for (int subset : subsets) {
+				int[] elements = MaskedSets.elems(subset);	
+				for (int j : elements) {
+					if (j == source) continue;
+					int prevSubset = MaskedSets.sub(subset, j);
+					
+					float min = Float.POSITIVE_INFINITY;
+					for (int k : elements) {
+						if (k == j) continue;
+						min = Math.min(min, 
+								get(pathLengthPrev, k, prevSubset) 
+								+ target.distance(k, j));
+					}
+					set(pathLengthPrev, j, subset, min);
+					
+				}	
+			}
+//			copy(pathLengthNext, pathLengthPrev);
+		}
+	}
+	
+	public float getTourWeight() {
+		int lastSubset = (~0) >>> (32 - target.size());
+		
+		float min = Float.POSITIVE_INFINITY;
+		
+		for (int last = 0; last < size; last++) {
+			if (last == source) continue;
+			min = Math.min(min, get(pathLengthPrev, last, lastSubset) + target.distance(last, source));
+		}
+		return min;
+	}
+	
+	private static float get(float[][] array, int dest, int subset) {
+	//	return array[dest][MaskedSets.orderOf(subset)];
+		return array[dest][subset];
+	}
+	
+	private static void set(float[][] array, int dest, int subset, float value) {
+//		array[dest][MaskedSets.orderOf(subset)] = value;
+		array[dest][subset] = value;
+	}
+	
+	private static void copy(float[][] source, float[][] dest) {
+		for (int i = 0; i < source.length; i++) {
+			System.arraycopy(source[i], 0, dest[i], 0, source[i].length);
+		}
+	}
+	
+}
